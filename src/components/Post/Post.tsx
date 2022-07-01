@@ -12,9 +12,9 @@ export function Post(props: IPost) {
     <article className={styles.post}>
       <header>
         <div className={styles.author}>
-          <img src="https://github.com/SenhorBiscoito.png" />
+          <img src="https://github.com/jeany3g.png" />
           <div className={styles.authorInfo}>
-            <strong>SenhorBiscoito</strong>
+            <strong>jeany3g</strong>
             <span>Web Developer</span>
           </div>
         </div>
