@@ -1,18 +1,19 @@
 import { format, formatDistanceToNow } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
+import { useState } from "react";
 
 import { Avatar } from "../Avatar/Avatar";
 import { Comment } from "../Comment/Comment";
 
 import styles from "./Post.module.css";
 
-interface IContent {
+export interface IContent {
   id: number;
   type: string;
   content: string;
 }
 
-interface IPost {
+export interface IPost {
   author: {
     name: string;
     avatar_url: string;
@@ -23,6 +24,12 @@ interface IPost {
 }
 
 export function Post({ author, published_at, content }: IPost) {
+  const [comments, setComments] = useState([
+    "Muito bom Devon, parabéns!! 👏👏",
+  ]);
+
+  const [newCommentText, setNewCommentText] = useState("");
+
   const published_date_formatted = format(
     published_at,
     "dd 'de' LLLL 'de' yyyy 'às' HH:mm",
@@ -35,6 +42,32 @@ export function Post({ author, published_at, content }: IPost) {
     locale: ptBR,
     addSuffix: true,
   });
+
+  function handleCreateNewComment(event: React.FormEvent) {
+    event.preventDefault();
+
+    if (!newCommentText) {
+      return;
+    }
+
+    setComments([...comments, newCommentText]);
+
+    setNewCommentText("");
+  }
+
+  function handleNewCommentChange(
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) {
+    setNewCommentText(event.target.value);
+  }
+
+  function deleteComment(commentToDelete: string) {
+    const commentsWithoutDeleteOne = comments.filter(
+      (comment) => comment !== commentToDelete
+    );
+
+    setComments(commentsWithoutDeleteOne);
+  }
 
   return (
     <article className={styles.post}>
@@ -74,10 +107,15 @@ export function Post({ author, published_at, content }: IPost) {
         })}
       </div>
 
-      <form className={styles.commentForm}>
+      <form onSubmit={handleCreateNewComment} className={styles.commentForm}>
         <strong>Deixe seu feedback</strong>
 
-        <textarea placeholder="Deixe um comentário aqui..." />
+        <textarea
+          name="comment"
+          value={newCommentText}
+          onChange={handleNewCommentChange}
+          placeholder="Deixe um comentário aqui..."
+        />
 
         <footer>
           <button type="submit">Publicar</button>
@@ -85,9 +123,13 @@ export function Post({ author, published_at, content }: IPost) {
       </form>
 
       <div className={styles.commentLint}>
-        <Comment />
-        <Comment />
-        <Comment />
+        {comments.map((comment) => (
+          <Comment
+            key={comment}
+            content={comment}
+            onDeleteComment={deleteComment}
+          />
+        ))}
       </div>
     </article>
   );
